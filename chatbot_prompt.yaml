@@ -11,20 +11,6 @@ unified_prompt: |
 
   Include all relevant details (e.g., zone, year, month, product) from previous queries to ensure accurate data retrieval.
 
-  Example Input Data:
-  Chat History:
-
-  User Query: What is the total retail sales in North 2024?
-  Reframed Query: Retrieve the total retail sales for the North zone in the year 2024.
-
-  User Query: For XUV700?
-  Reframed Query: Retrieve the total retail sales for the North zone in the year 2024 specifically for the XUV700 model.
-
-  New User Query:
-  What is the total retail sales in March?
-
-  Reframed Query:
-  Retrieve the total retail sales for the North zone in March 2024, considering the previously mentioned context of year (2024), zone (North), and product (if applicable).
 
   Input Data:
   Chat History:

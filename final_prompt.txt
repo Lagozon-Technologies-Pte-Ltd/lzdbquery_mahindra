@@ -15,8 +15,8 @@
 
 7. **Column Names:** Always wrap column names in backticks (`) to ensure proper BigQuery syntax.
 
-8.  **`DATE_TRUNC` & `FORMAT_DATE` Requirements (CRITICAL): If `FORMAT_DATE` is used to display a month, `DATE_TRUNC(Date, MONTH)` MUST be included in the SELECT clause and used in the GROUP BY clause.**
-    8a. Quarterly Data Handling: When the user asks for quarterly data or mentions 'quarter,' always use DATE_TRUNC(Date, QUARTER) for quarter identification. Ensure that the formatted quarter (e.g., 'Apr-24') and the DATE_TRUNC version are both included in the SELECT and GROUP BY clauses.
+8. **`DATE_TRUNC` & `FORMAT_DATE` Requirements (CRITICAL): If `FORMAT_DATE` is used to display a month, `DATE_TRUNC(Date, MONTH)` MUST be included in the SELECT clause and used in the GROUP BY clause.  The DATE_TRUNC column should have an alias prefixed with an underscore (e.g., `AS _Month_Start`). This indicates the column is for internal use (sorting) and should not be displayed in the final output. The ORDER BY clause for chronological sorting MUST then reference the DATE_TRUNC column.**
+    8a. Quarterly Data Handling: When the user asks for quarterly data or mentions 'quarter,' always use DATE_TRUNC(Date, QUARTER) for quarter identification. Ensure that the formatted quarter (e.g., 'Apr-24') and the DATE_TRUNC version (with a prefixed underscore alias) are both included in the SELECT and GROUP BY clauses.
 9. **Proper Ordering in Window Functions:** When using LAG(), LEAD(), or any window function, ensure the ORDER BY clause within the window function uses DATE_TRUNC(Date, MONTH) or DATE_TRUNC(Date, QUARTER) as appropriate. When showing side-by-side columns in the final SELECT statement, avoid ordering within the window function, but ensure the final result set is ordered correctly (usually by the DATE_TRUNC value).
 
 10. **Table Analysis:** Analyze the table given below and strictly follow these tables and their columns and datatypes while generating queries.
@@ -117,17 +117,17 @@ Always use `LOWER()` on both sides for string comparisons to enforce case insens
     WITH MonthlyData AS (
         SELECT
             FORMAT_DATE('%b-%y', b.`Date`) AS `Month`,
-            DATE_TRUNC(b.`Date`, MONTH) AS `Month_Start`,  -- Include for proper sorting
+            DATE_TRUNC(b.`Date`, MONTH) AS `_Month_Start`,  -- Include for proper sorting, hide from output
             ROUND(SUM(b.`Test Drive`), 1) AS `Total Test Drives`
         FROM `DS_sales_data.billing_data` b
         WHERE b.`Date` BETWEEN DATE('2024-04-01') AND DATE('2025-03-31')
-        GROUP BY `Month`, `Month_Start`  -- Group by both
+        GROUP BY `Month`, `_Month_Start`  -- Group by both
     )
     SELECT
         `Month`,
         `Total Test Drives`
     FROM MonthlyData
-    ORDER BY `Month_Start`;  -- Order by the truncated date
+    ORDER BY `_Month_Start`;  -- Order by the truncated date
    
 
 4. **`What is the growth % of XUV700 between Jun 2024 to Jul 2024`**
@@ -262,7 +262,7 @@ FROM
 - **Zero Handling:** Maintain `ROUND(..., 1)` even when dealing with whole numbers (e.g., 236 → 236.0) and ensure growth percentages are formatted with `CONCAT(ROUND(value, 1), '%')`.
 - **Validate that every alias (s, b, p) is correctly referenced before use.**
 - Before generating the final SQL query, double-check that all column references (e.g., `Zone Name`, `RSM Name`, etc.) are being pulled from the correct tables based on the JOIN conditions and the table schemas provided.
-
+- When using DATE_TRUNC for sorting purposes, ensure it has an alias prefixed with an underscore (e.g., _Month_Start) to signify that it should not be included in the final output shown to the user.
 ---
 
 **Additional Guidance:**

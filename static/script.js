@@ -375,6 +375,7 @@ function updatePageContent(data) {
     const sqlQueryContent = document.getElementById("sql-query-content"); // Get the modal content
     const tablesContainer = document.getElementById("tables_container");
     const xlsxbtn = document.getElementById("xlsx-btn"); // Excel button container
+    const emailbtn = document.getElementById("email-btn"); // Excel button container
     const faqbtn =  document.getElementById("add-to-faqs-btn");
     // Update user query text
     userQueryDisplay.querySelector('span').textContent = data.user_query || "";
@@ -430,9 +431,16 @@ function updatePageContent(data) {
         faqBtn.id = "add-to-faqs-btn";
         faqBtn.onclick = addToFAQs;
         faqBtn.style.display = "block"; // Ensure button appears in a new line
+        const emailbtn =  document.createElement("button");
+        emailbtn.id = "send-email-btn";
+
+        emailbtn.textContent = "Send Email";
+
+        emailbtn.style.display = "block"; // Ensure button appears in a new line
 
         xlsxbtn.appendChild(viewQueryBtn); // Append below the Excel download button
-        xlsxbtn.appendChild(faqBtn); // Append below the Excel download button
+        xlsxbtn.appendChild(faqBtn);
+        xlsxbtn.appendChild(emailbtn) // Append below the Excel download button
     } else {
         sqlQueryContent.textContent = "No SQL query available.";
     }
